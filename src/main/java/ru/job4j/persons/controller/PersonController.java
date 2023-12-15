@@ -4,22 +4,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.persons.model.Person;
-import ru.job4j.persons.repository.PersonRepository;
+import ru.job4j.persons.service.PersonService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/person")
 public class PersonController {
-    private final PersonRepository persons;
+    private final PersonService persons;
 
-    public PersonController(final PersonRepository persons) {
+    public PersonController(final PersonService persons) {
         this.persons = persons;
     }
 
     @GetMapping("/")
     public List<Person> findAll() {
-        return (List<Person>) this.persons.findAll();
+        return this.persons.findAll();
     }
 
     @GetMapping("/{id}")
@@ -33,23 +33,23 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
+        var createdPerson = this.persons.save(person);
         return new ResponseEntity<Person>(
-                this.persons.save(person),
-                HttpStatus.CREATED
+                createdPerson.orElse(new Person()),
+                createdPerson.isPresent() ? HttpStatus.CREATED : HttpStatus.NOT_ACCEPTABLE
         );
     }
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Person person) {
-        this.persons.save(person);
-        return ResponseEntity.ok().build();
+        var updatedPerson = this.persons.save(person);
+        return updatedPerson.isPresent() ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         Person person = new Person();
         person.setId(id);
-        this.persons.delete(person);
-        return ResponseEntity.ok().build();
+        return this.persons.delete(person) ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 }
