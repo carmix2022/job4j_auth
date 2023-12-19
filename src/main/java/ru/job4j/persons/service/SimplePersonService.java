@@ -18,12 +18,13 @@ public class SimplePersonService implements PersonService {
 
     @Override
     public Optional<Person> save(Person candidate) {
-        return persons.saveEntity(candidate);
+        Person resultPerson = persons.save(candidate);
+        return resultPerson.getId() != 0 ? Optional.of(resultPerson) : Optional.empty();
     }
 
     @Override
     public boolean delete(Person candidate) {
-        return persons.deleteEntity(candidate);
+        return persons.deletebyId(candidate.getId()) > 0;
     }
 
     @Override
