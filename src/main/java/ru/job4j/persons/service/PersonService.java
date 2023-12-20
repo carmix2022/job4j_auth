@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface PersonService {
     Optional<Person> save(Person candidate);
 
+    boolean update(Person person);
+
     boolean delete(Person person);
 
     Optional<Person> findById(int id);

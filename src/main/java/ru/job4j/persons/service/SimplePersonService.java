@@ -23,6 +23,15 @@ public class SimplePersonService implements PersonService {
     }
 
     @Override
+    public boolean update(Person candidate) {
+        boolean found = persons.existsById(candidate.getId());
+        if (found) {
+            persons.save(candidate);
+        }
+        return found;
+    }
+
+    @Override
     public boolean delete(Person candidate) {
         return persons.deletebyId(candidate.getId()) > 0;
     }
