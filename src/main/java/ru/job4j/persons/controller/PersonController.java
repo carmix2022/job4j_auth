@@ -33,7 +33,7 @@ public class PersonController {
     public ResponseEntity<Person> create(@RequestBody Person person) {
         return this.persons.save(person)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 
     @PutMapping("/")
